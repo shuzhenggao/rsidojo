@@ -1,0 +1,813 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>RSI-Dojo: Training LLM Agents to Automate LLM Post-Training</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="description" content="RSI-Dojo: Training LLM Agents to Automate LLM Post-Training"/>
+<style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+	/* Paint a complete callout box on every PDF page fragment. */
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
+}
+
+/* For default-background callouts, render the border outline. */
+.callout.block-color-default_background {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+/*
+ * Toggles and callouts hold arbitrary content, so they can easily be taller
+ * than a page. They must stay breakable: avoiding breaks inside them makes
+ * Chromium push the whole block onto the next page, which leaves the previous
+ * page mostly empty before every long toggle.
+ */
+details,
+aside {
+	margin: 1.25em 0;
+}
+
+/* Keep a toggle's title on the same page as the start of its content. */
+summary {
+	page-break-after: avoid;
+	break-after: avoid;
+}
+
+/*
+ * Toggle headings render as <h1/h2/h3 style="display:inline-block"> inside
+ * <summary>. Without this reset, the heading's margin-top pushes it below the
+ * ::marker (▼), so the triangle and the title appear on separate lines.
+ */
+summary h1,
+summary h2,
+summary h3,
+summary h4 {
+	margin-top: 0;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+
+	table.collection-content {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	table.collection-content th,
+	table.collection-content td {
+		overflow-wrap: anywhere;
+	}
+
+	table.collection-content td > .user,
+	table.collection-content td > time {
+		white-space: pre-wrap;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content-wrapper {
+	overflow-x: auto;
+}
+
+@media only print {
+	.collection-content-wrapper {
+		overflow-x: visible;
+	}
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	gap: 46px;
+}
+
+.column {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.column > *:first-child {
+	margin-top: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding-inline: 0.125rem;
+	padding-block: 0.375rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+table {
+	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol.numbered-list.numbered-list-digits-2 {
+	padding-inline-start: 2em;
+}
+
+ol.numbered-list.numbered-list-digits-3plus {
+	padding-inline-start: 2.4em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+/*
+ * Render emoji icons using a ::before pseudo-element to keep the glyph
+ * out of the DOM textContent traversal. This avoids double-rendering icons
+ * in callouts and page titles.
+ * NOTE(slim/html-export-pseudo-icons): I can't tagref this because it will
+ * flag as a duplicate tag after codegen.
+ */
+.icon[data-emoji]::before {
+	content: attr(data-emoji);
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.tab {
+	margin: 1.25em 0;
+	padding-inline: 1rem;
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+
+@media only screen and (max-width: 720px) {
+	body { margin: 1rem; max-width: none; }
+	.page-title { font-size: 2rem; }
+	figure img { width: 100% !important; height: auto !important; }
+}
+</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')
+@media only screen and (max-width: 720px) {
+	body { margin: 1rem; max-width: none; }
+	.page-title { font-size: 2rem; }
+	figure img { width: 100% !important; height: auto !important; }
+}
+</style></head><body><article id="3f69ae5c-9b29-80ba-b6c2-cf630a722fe2" class="page sans"><header><h1 class="page-title" dir="auto">RSI-Dojo: Training LLM Agents to Automate LLM Post-Training</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><p id="4019ae5c-9b29-800f-ac89-f491878f657d" class="" dir="auto"><strong>Team: </strong><em>Shuzheng Gao, Zhaojian Yu, Penghao Yin, Yuling Shi, Kai Cai, Shilin He, and Michael R. Lyu </em></p><p id="40e9ae5c-9b29-807c-aa69-c5fb356f31a1" class="" dir="auto"><strong>Affiliations:  </strong>The Chinese University of Hong Kong, ByteDance, Tsinghua University, Shanghai Jiao Tong University</p><p id="4019ae5c-9b29-80b8-9e20-e10c3b1f9aac" class="" dir="auto"><strong>Date: </strong>October 9, 2026</p><aside class="block-color-gray_background callout" data-notion-callout="" data-notion-callout-icon="📌" data-notion-callout-background="gray_background" style="white-space:pre-wrap;display:flex" id="4019ae5c-9b29-8030-ae9e-c00d8d93d510" dir="ltr"><div style="font-size:1.5em"><span class="icon" data-emoji="📌"></span></div><div style="width:100%"><p id="4019ae5c-9b29-8084-9509-e6d5952d771e" class="" dir="auto">We are thrilled to introduce <strong>RSI-Dojo</strong>, a collection of executable model-training environments for automating LLM post-training. Using high-quality trajectories collected from these environments, we fine-tune open-weight models to obtain <strong>RSI-Dojo-9B</strong> and <strong>RSI-Dojo-35B-A3B</strong>, which improve over their base models by <strong>8.74</strong> and <strong>16.87</strong> points on PostTrainBench, respectively. RSI-Dojo-35B-A3B reaches <strong>29.95</strong> on PostTrainBench and <strong>53.29</strong> on PostTrainBench-Lite, matching or exceeding several frontier models under the same evaluation setting.</p><p id="4129ae5c-9b29-80e2-9c6e-e4cf5d0f4779" class="" dir="auto">👨‍💻 <a href="https://github.com/shuzhenggao/rsi-dojo">Github</a>, 🤗 <a href="https://huggingface.co/datasets/szgao/RSI-Dojo">Data</a>, 📖 <a href="https://arxiv.org/abs/2611.03698v1">Paper</a></p></div></aside><figure id="4019ae5c-9b29-8033-afa7-e697c33ecc98" class="image" data-notion-image="assets/hero.png" dir="ltr"><a href="assets/hero.png"><img style="width:703.984375px" src="assets/hero.png"/></a><figcaption><em><mark class="highlight-gray" data-notion-highlight="gray">Figure 1: Performance of RSI-Dojo-35B-A3B and RSI-Dojo-9B on PostTrainBench.</mark></em></figcaption></figure><h2 id="4019ae5c-9b29-8065-b31b-fb951e6fc5e8" class="" dir="auto">1. Introduction</h2><p id="4019ae5c-9b29-8091-8e8b-c149129af319" class="" dir="auto">As LLM agents are increasingly used for complex, long-horizon tasks, using AI systems to improve AI systems has become a key step toward recursive self-improvement (RSI). Recent work has evaluated agents on designing reinforcement-learning pipelines, curating data with feedback, and automating post-training workflows. While promising, these efforts mainly optimize agents at the harness or workflow level, rather than internalizing the ability to train and improve base models.</p><p id="4019ae5c-9b29-80f7-864f-cbadcd516696" class="" dir="auto">What is still missing is a set of scalably constructible post-training task environments. Given a base model and a target benchmark, an agent with genuine post-training capability must autonomously analyze capability gaps, construct or find data, configure training, evaluate checkpoints, diagnose failures, and keep iterating until it produces a better model. Without such environments, it is difficult to systematically collect high-quality trajectories, let alone train models on the process itself.</p><p id="4019ae5c-9b29-80ee-be26-d9823080126f" class="" dir="auto">To address this gap, we build RSI-Craft, an automatic pipeline that converts research artifacts into executable post-training environments, yielding RSI-Dojo with <strong>281 tasks</strong>. Using frontier models, we collect complete model-training trajectories on these environments, filter them for both behavior quality and measurable improvement, and fine-tune open-weight models to obtain RSI-Dojo-9B and RSI-Dojo-35B-A3B.</p><h2 id="4019ae5c-9b29-80f4-93dd-d7915d61a728" class="" dir="auto">2. RSI-Dojo Construction</h2><p id="4019ae5c-9b29-8003-b968-dc3fad0064b4" class="" dir="auto">We develop <strong>RSI-Craft</strong>, an automatic pipeline for converting research artifacts into executable post-training environments.</p><figure id="40e9ae5c-9b29-8043-8422-f509f77d2090" class="image" data-notion-image="assets/method.png" dir="ltr"><a href="assets/method.png"><img style="width:2330px" src="assets/method.png"/></a><figcaption><em><mark class="highlight-gray" data-notion-highlight="gray">Figure 2: Overview of the RSI-Craft pipeline for constructing post-training tasks.</mark></em></figcaption></figure><h3 id="4019ae5c-9b29-80d6-8228-e2f5acab2f50" class="" dir="auto">Finding Candidate Tasks</h3><p id="4019ae5c-9b29-80e2-8163-ca7772fa2ea1" class="" dir="auto">RSI-Craft searches recent papers from NeurIPS, ICML, ICLR, ACL, EMNLP, NAACL, and COLM, and imports additional tasks from InspectAI evaluation platform. A lightweight keyword stage identifies papers that may introduce a dataset or benchmark. An agent then checks whether each candidate contains a reusable dataset and an executable evaluation target.</p><h3 id="4019ae5c-9b29-80f5-985f-ffd85cfd6d29" class="" dir="auto">Reconstructing the Environment</h3><p id="4019ae5c-9b29-80f1-8578-f4862fbc9d4b" class="" dir="auto">For every candidate, RSI-Craft locates the data, recovers the task definition and metric, installs the required dependencies, and verifies that evaluation can run successfully. It then converts the task to a unified interface that can be used by a post-training agent. To keep each task practical, datasets with fewer than 50 examples are removed and datasets with more than 300 examples are downsampled.</p><h3 id="4019ae5c-9b29-8070-9105-e4d5c9e08a19" class="" dir="auto">Keeping Tasks That Provide Useful Feedback</h3><p id="4019ae5c-9b29-8074-a4b5-cce17604f261" class="" dir="auto">The remaining environments are filtered to ensure reliability and discriminability. We exclude tasks with unstable evaluations, tasks requiring unsupported specialized infrastructure, and tasks whose evaluation metrics do not meaningfully depend on the generated output. We also access the discriminability of each dataset by comparing the performance of Qwen3-4B-Base and GPT-5-mini on every task. A task is retained only when the two models differ by at least 10 percentage points. Tasks that are too easy or too difficult for both models are removed because they provide little signal for iterative improvement.</p><div id="4019ae5c-9b29-8055-aefb-cf9a16f808e6" class="column-list" data-notion-column-list="" dir="auto"><div id="4019ae5c-9b29-80fc-806d-e8a1c54a7ae3" style="width:50%" class="column" data-notion-column-ratio="0.5" dir="auto"><p id="4019ae5c-9b29-80b0-9f5f-dd808b6b95ad" class="" dir="auto">The final <strong>RSI-Dojo contains 281 executable tasks across 10 domains</strong>. General QA and Safety are the largest categories, complemented by Math and Reasoning, Science and Medicine, Finance, Sociology, Instruction Following, and other specialized domains.</p><p id="4019ae5c-9b29-80c0-97be-de277d8a792e" class="" dir="auto">
+</p></div><div id="4019ae5c-9b29-807e-9e24-f05ced08a14f" style="width:50%" class="column" data-notion-column-ratio="0.5" dir="auto"><figure id="4019ae5c-9b29-8079-85a3-c1d3d2821b3e" class="image" data-notion-image="assets/thumbnail.png" dir="ltr"><a href="assets/thumbnail.png"><img style="width:288px" src="assets/thumbnail.png"/></a><figcaption><em><mark class="highlight-gray" data-notion-highlight="gray">Figure 3: Distribution of RSI-Dojo tasks across 10 domains.</mark></em></figcaption></figure></div></div><h2 id="4019ae5c-9b29-806a-9172-f40e31faad85" class="" dir="auto">3. Experiment Setup</h2><h3 id="4019ae5c-9b29-8013-82e2-e20939c080d6" class="" dir="auto">Trajectory Collection and Model Training</h3><p id="4019ae5c-9b29-806a-928a-f2d9b643dade" class="" dir="auto">We limit each rollout to five hours to save rollout cost. The retained Codex sessions are split at context-compaction boundaries, while generated reasoning summaries are excluded. Custom tool calls such as <code>exec</code> and <code>wait</code> are converted to standard tool-call representations when possible. We train Qwen3.5-9B and Qwen3.6-35B-A3B for four epochs.</p><h3 id="4019ae5c-9b29-804e-ac28-e814ff67b60b" class="" dir="auto">Evaluation Environment</h3><p id="4019ae5c-9b29-8067-98b7-fda70f8ba313" class="" dir="auto">Due to hardware availability, we conducted the experiments on a <strong>less powerful GPU</strong> than the required type in the official benchmark. All agents run with Codex CLI v0.142.4 and the standard AutoTrainess reprompting strategy and skills [2]. The additional guidance used during trajectory collection is not included during evaluation. Because Codex exposes <code>web_search</code> as a custom tool that is unavailable to our self-hosted models, those models are evaluated without it. To ensure access to useful training data, we download the resources listed by PostTrainBench and the Hugging Face resources used in publicly released benchmark traces. </p><h2 id="4019ae5c-9b29-80ff-b746-c891386bf849" class="" dir="auto">4. Experiment Results</h2><figure id="4019ae5c-9b29-80cd-a21d-d062578dc5c5" class="image" data-notion-image="assets/overview.png" dir="ltr"><a href="assets/overview.png"><img style="width:633.6476426799007px" src="assets/overview.png"/></a><figcaption><em><mark class="highlight-gray" data-notion-highlight="gray">Figure 4: Performance and reliability improvements of RSI-Dojo models after fine-tuning on PostTrainBench.</mark></em></figcaption></figure><p id="4019ae5c-9b29-8026-a6e0-c581cf866271" class="" dir="auto">On PostTrainBench, RSI-Dojo-9B improve from 7.72 to 16.46 (+8.74), while RSI-Dojo-35B-A3B improved from 13.08 to 29.95 (+16.87). Both models show gains across all four target base-model families. On the PostTrainBench-Lite, the improvements are also significant: from 0.56 and 5.80 to 15.71 and 53.29, respectively.</p><p id="4019ae5c-9b29-804d-8515-ffa6288a9ba3" class="" dir="auto">RSI-Dojo-35B-A3B achieves a score of 29.95, slightly outperforming frontier models GLM-5.2 (29.52), GPT-5.5 (27.80), and GPT-5.4 (26.21). On PostTrainBench-Lite, RSI-Dojo-35B-A3B obtains 53.29, comparable to GPT-5.5 (52.96) but lower than GLM-5.2 (56.37) and DeepSeek-V4.1-Flash (62.92).</p><p id="4019ae5c-9b29-80a3-84e0-ed9fe402b28d" class="" dir="auto">The reliability changes are even more straightforward: RSI-Dojo-9B went from “able to complete 10/28 settings and improve the model in 1/28” to “24/28 and 15/28”; RSI-Dojo-35B-A3B went from “15/28 and 11/28” to “28/28 and 26/28.” The latter achieved 61 effective improvements over 175 iterations (34.86%), with a much lower total number of iterations than GPT-5.4 or GPT-5.5. However, GLM-5.2 and DeepSeek-V4.1-Flash are still better in terms of iteration efficiency.</p><h2 id="4019ae5c-9b29-80bf-874f-c3b225708d50" class="" dir="auto">5. A New Way to Continual Learning </h2><p id="4019ae5c-9b29-800f-bf6c-f96702244b04" class="" dir="auto">The most immediate value of <strong>Autonomous Model Training Agents</strong> lies in accelerating the iteration cycle of model development. However, we believe that compared with merely accelerating the R&amp;D process of a foundation-model team, the deeper significance of <strong>letting models train models themselves</strong> may lie in <strong>providing a new way to implement continual learning</strong>.</p><h3 id="4019ae5c-9b29-8035-9a2f-ec2c10fa8685" class="" dir="auto">5.1 Continual Learning: Problem and Existing Approaches</h3><p id="4019ae5c-9b29-8041-978e-e3cffd1dda07" class="" dir="auto">Continual learning is a long-standing problem in machine learning, and it has not been solved simply because models have become more capable. The goal is for models to learn from continuously generated new data, keep improving over time, and at the same time preserve important existing capabilities. Over the past few decades, many methods have been proposed to this end, ranging from early approaches such as data replay and dynamic model architectures [3, 4] to more recent ideas such as model editing [5, 6], OPSD [7], and Test-time Training [8], all of which attempt to address this problem at different levels.</p><h3 id="4019ae5c-9b29-80d2-b425-d4b814e619f8" class="" dir="auto">5.2 From Fixed Workflows to Dynamic, Trainable Update Decisions</h3><p id="4019ae5c-9b29-80e2-9125-fc7faf4e7cd0" class="" dir="auto">However, these methods mainly rely on pre-designed algorithms or workflows to update model weights or the harness. In other words, the data used for each parameter update, the update algorithm, and the strength of the update are all determined by a computation process with a fixed amount of computation. If we view each parameter update as a mapping—that is, given the current model parameters and the current data in continual learning, we first seek an appropriate update procedure, which is then applied to obtain the next parameter state—then ideally the chosen procedure should allow the model to acquire new capabilities without forgetting. Formally, the decision of how to update can be written as <span data-notion-inline-equation="A_t = \mathcal{M}(\theta_t, D_t)" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathcal">M</span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">θ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span>, where <span data-notion-inline-equation="\mathcal{M}" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathcal">M</span></span></span></span></span> maps the current parameters <span data-notion-inline-equation="\theta_t" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">θ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span> and data <span data-notion-inline-equation="D_t" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span> to an update procedure <span data-notion-inline-equation="A_t" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span>. The new parameters are then obtained by applying this procedure: <span data-notion-inline-equation="\theta_{t+1} = A_t(\theta_t, D_t)" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9028em;vertical-align:-0.2083em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">θ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2083em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">θ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></span>.</p><p id="4019ae5c-9b29-8019-ad0f-d64f4331fd0e" class="" dir="auto">This is not a trivial objective, and existing continual learning methods face several limitations. Taking common approaches such as model editing, OPSD, and test-time training as examples, the model is typically trained only on a single given trajectory or dataset. Merely training the model to memorize the content it has seen does not guarantee that it will retain and later utilize this information to handle related problems. Furthermore, methods such as test-time training and many learnable-memory approaches often suffer from limited update modules—for instance, only a subset of model parameters can be updated—which imposes a clear capacity bottleneck and is inconsistent with the goal of long-term continual learning.</p><figure id="4019ae5c-9b29-80e5-8629-e269d28dcf63" class="image" data-notion-image="assets/generated-1.png" dir="ltr"><a href="assets/generated-1.png"><img style="width:720px" src="assets/generated-1.png"/></a><figcaption>Figure 5: From pre-designed update workflows to compute-scalable, model-driven update decisions. An update controller <span data-notion-inline-equation="\mathcal{M}" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathcal">M</span></span></span></span></span> selects a procedure <span data-notion-inline-equation="A_t" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span> given <span data-notion-inline-equation="\theta_t" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">θ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span> and <span data-notion-inline-equation="D_t" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span>, which is then applied to obtain <span data-notion-inline-equation="\theta_{t+1}" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.9028em;vertical-align:-0.2083em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.02778em;">θ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3011em;"><span style="top:-2.55em;margin-left:-0.0278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">t</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2083em;"><span></span></span></span></span></span></span></span></span></span></span>. The model-driven controller can allocate additional computation to diagnosis, data synthesis, and plan refinement when needed.</figcaption></figure><p id="4019ae5c-9b29-802f-a97e-c0a1cd6b7e7a" class="" dir="auto">We can revisit the successful experience of language model development. A fixed-depth Transformer is not Turing-complete and cannot perform certain complex computations or fittings under a fixed computational budget [9, 10, 14]. Consequently, early practices of training models to generate answers directly from a query encountered difficulties in fitting and generalization. The emergence of chain-of-thought and test-time scaling [11, 12, 14] enabled models to allocate varying amounts of computation according to problem difficulty: by producing longer reasoning trajectories, models can devote more computation to learning the mapping from query to answer. Similar benefits of test-time compute scaling have also been observed in agents, looped Transformers [13], and other settings.</p><p id="4019ae5c-9b29-803e-987a-ed8d26881762" class="" dir="auto">Therefore, we believe that a key bottleneck worth exploring in continual learning is whether the decision of “how the model should be updated”—that is, the procedure <span data-notion-inline-equation="\mathcal{M}" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathcal">M</span></span></span></span></span> that selects the update method <span data-notion-inline-equation="A_t" class="notion-text-equation-token" contenteditable="false"><span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.2806em;"><span style="top:-2.55em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">t</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></span>—can itself allocate varying amounts of computation depending on the situation and can be further improved. For example, when deciding on an update, a model may choose to train directly on existing data, or first synthesize additional relevant data and then train; for problems whose causes are unclear, diagnostic experiments may be required before any update is performed. More concretely, if the goal is for the model to internalize a piece of code and later invoke its functions, the model need not merely perform next-token prediction on the code; it can also synthesize question-answer pairs that teach how to use the functions. A promising path toward this capability is to make the update decision itself model-driven and to train models to make such decisions. This does not mean abandoning existing update algorithms; rather, it allows the model to select, combine, and adapt them according to the current context.</p><h3 id="4019ae5c-9b29-804e-8b4c-deed8d6a3ed3" class="" dir="auto">5.3 Inspiration from Model Development and Human Learning Process</h3><p id="4019ae5c-9b29-805b-9340-debda07e42c7" class="" dir="auto">From another perspective, we can also examine how model evolution is achieved in the foundation model development process. From one generation of models to the next, progress usually does not come from simply applying a single fixed method and repeatedly adding more data for continued training. Instead, it involves selecting appropriate checkpoints and designing data synthesis and training strategies based on bad cases and capability gaps. In some urgent situations, developers may also choose to add fallback strategies on the harness side.</p><p id="4019ae5c-9b29-807c-8097-dbd6450e4c9e" class="" dir="auto">Human learning offers an intuitive analogy, although this does not imply a strict biological correspondence between these mechanisms:</p><ul id="4019ae5c-9b29-8059-87c0-e845ae172bff" class="bulleted-list" dir="auto"><li style="list-style-type:disc">While awake, people temporarily retain and use certain information → similar to information in context;</li></ul><ul id="4019ae5c-9b29-80e7-8105-e5f10038f421" class="bulleted-list" dir="auto"><li style="list-style-type:disc">They also think about and reflect on problems they encounter → similar to constructing more relevant data around bad cases;</li></ul><ul id="4019ae5c-9b29-80a8-a3ba-e613db405a2f" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Memory replay and consolidation during sleep → similar to model training process.</li></ul><figure id="4019ae5c-9b29-808e-a6dc-fa8ade20fbbc" class="image" data-notion-image="assets/generated-2.png" dir="ltr"><a href="assets/generated-2.png"><img src="assets/generated-2.png"/></a><figcaption><em><mark class="highlight-gray" data-notion-highlight="gray">Figure 6: Analogy between human learning processes and agent continual learning mechanisms.</mark></em></figcaption></figure><p id="4019ae5c-9b29-8048-8424-f8a2289c1ba5" class="" dir="auto">In this view, continual learning may not necessarily require online parameter update algorithms. If we regard the model together with its harness as a whole system, it may be sufficient for the system to periodically identify a suitable way to train on accumulated data and replace its own base model.</p><h3 id="4019ae5c-9b29-804a-8be8-efa991e8423c" class="" dir="auto">5.4 Toward a Closed Loop of Continual Improvement</h3><p id="4019ae5c-9b29-803c-8b41-de416bb6c49a" class="" dir="auto">Interestingly, some of the behaviors described above can also be observed in PostTrainBench [1]. For example, Post-Training Agents can analyze the capability gaps of the model to be trained and search for data, select suitable checkpoints for continued training, and even manually construct training data for certain bad cases—much like how humans generalize from mistakes and think through similar problems (although such behaviors are judged as hacking by PostTrainBench). When an agent has sufficiently strong model-training capabilities and can reliably evaluate candidate versions, it may be able to make its own base model as the object of optimization and replace it when appropriate, thereby forming a closed loop of continual improvement.</p><figure id="4019ae5c-9b29-8008-87c4-fd26c726e9c0" class="image" data-notion-image="assets/results.png" dir="ltr"><a href="assets/results.png"><img style="width:768px" src="assets/results.png"/></a><figcaption><em><mark class="highlight-gray" data-notion-highlight="gray">Figure 7: Closed-loop continual improvement. The agent can treat its own base model as the optimization target, evaluate candidate versions, and replace components when appropriate while preserving prior capabilities.</mark></em></figcaption></figure><p id="4019ae5c-9b29-80f9-b007-dbfb697688cb" class="" dir="auto">Furthermore, what needs to be evaluated here is not only whether performance improves on a particular task, but also whether important old capabilities are preserved and whether the new version remains capable of organizing subsequent learning. Imagine a scenario in which an agent runs continuously within a harness, constantly receives problems and feedback, and improves different modules as needed. This process could be linked together through a series of optimization tasks similar to PostTrainBench, but each round would need to inherit the previous system state and account for interactions among updates, rather than pursuing only single-round gains. In such a system, both the harness and the model can become replaceable components, while the agent can continuously replace and iterate on itself while “in flight.” This, in our view, is the deeper value that Autonomous Post-Training Agents may bring to continual learning.</p><figure id="4019ae5c-9b29-801c-b6de-ca5dc6c3ab38" class="image" data-notion-image="assets/leaderboard.png" dir="ltr"><a href="assets/leaderboard.png"><img style="width:672px" src="assets/leaderboard.png"/></a><figcaption><em><mark class="highlight-gray" data-notion-highlight="gray">Figure 8: Illustration of how autonomous post-training agents may support continual learning by iteratively replacing model and harness components while in flight.</mark></em></figcaption></figure><h2 id="4019ae5c-9b29-806e-b2f0-cf04c3b8c368" class="" dir="auto">References</h2><ol type="1" id="4019ae5c-9b29-8039-8fc4-ec922605d0e7" class="numbered-list" start="1" dir="auto"><li>Ben Rank et al. <em>PostTrainBench: Can LLM Agents Automate LLM Post-Training?</em> 2026.</li></ol><ol type="1" id="4019ae5c-9b29-80e5-98d6-e043aca56575" class="numbered-list" start="2" dir="auto"><li>Zhaojian Yu et al. <em>AutoTrainess: Teaching Language Models to Improve Language Models Autonomously.</em> 2026.</li></ol><ol type="1" id="4019ae5c-9b29-8010-b979-ca85f69b7ffa" class="numbered-list" start="3" dir="auto"><li>David Lopez-Paz and Marc’Aurelio Ranzato. <em>Gradient Episodic Memory for Continual Learning.</em> NeurIPS 2017.</li></ol><ol type="1" id="4019ae5c-9b29-8054-a662-ead530934cae" class="numbered-list" start="4" dir="auto"><li>Andrei A. Rusu et al. <em>Progressive Neural Networks.</em> arXiv 2016.</li></ol><ol type="1" id="4019ae5c-9b29-800d-ad9e-ff88bf5a6894" class="numbered-list" start="5" dir="auto"><li>Kevin Meng et al. <em>Locating and Editing Factual Associations in GPT.</em> NeurIPS 2022.</li></ol><ol type="1" id="4019ae5c-9b29-80dc-9f15-dd8434f93c15" class="numbered-list" start="6" dir="auto"><li>Kevin Meng et al. <em>Mass-Editing Memory in a Transformer.</em> ICLR 2023.</li></ol><ol type="1" id="4019ae5c-9b29-8002-8dcc-e84560a61c77" class="numbered-list" start="7" dir="auto"><li>Idan Shenfeld et al. <em>Self-Distillation Enables Continual Learning.</em> arXiv:2601.19897, 2026.</li></ol><ol type="1" id="4019ae5c-9b29-801b-b329-ee0b2985985a" class="numbered-list" start="8" dir="auto"><li>Yu Sun et al. <em>Test-Time Training with Self-Supervision for Generalization under Distribution Shifts.</em> ICML 2020.</li></ol><ol type="1" id="4019ae5c-9b29-80f1-8762-fc24f89a0601" class="numbered-list" start="9" dir="auto"><li>Jorge Pérez, Pablo Barceló, and Javier Marinkovic. <em>On the Turing Completeness of Modern Neural Network Architectures.</em> ICLR 2019.</li></ol><ol type="1" id="4019ae5c-9b29-800e-9b0f-e9f1d115bdae" class="numbered-list numbered-list-digits-2" start="10" dir="auto"><li>William Merrill and Ashish Sabharwal. <em>The Parallelism Tradeoff: Limitations of Log-Precision Transformers.</em> TACL 2023.</li></ol><ol type="1" id="4019ae5c-9b29-8099-93ef-d1b95a259d84" class="numbered-list numbered-list-digits-2" start="11" dir="auto"><li>Jason Wei et al. <em>Chain-of-Thought Prompting Elicits Reasoning in Large Language Models.</em> NeurIPS 2022.</li></ol><ol type="1" id="4019ae5c-9b29-8057-a3c2-d9dea2aafa9c" class="numbered-list numbered-list-digits-2" start="12" dir="auto"><li>Charlie Snell et al. <em>Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters.</em> arXiv 2024.</li></ol><ol type="1" id="4019ae5c-9b29-80ac-bcc0-f4a2c382d7f5" class="numbered-list numbered-list-digits-2" start="13" dir="auto"><li>Ying Fan et al. <em>Looped Transformers as Programmable Computers.</em> ICML 2023.</li></ol><ol type="1" id="4019ae5c-9b29-80da-9c55-e5712f909f2b" class="numbered-list numbered-list-digits-2" start="14" dir="auto"><li>Guhao Feng et al. <em>Towards Revealing the Mystery behind Chain of Thought: A Theoretical Perspective.</em> NeurIPS 2023.</li></ol></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
